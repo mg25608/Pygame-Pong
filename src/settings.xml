@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<settings>
+	<setting name="resolution">
+		<!-- Resolution by width x height -->
+		<width>1280</width>
+		<height>768</height>
+	</setting>
+
+	<setting name="application">
+		<!-- Everything from the application title to the icon is here -->
+		<title>Pong Game</title>
+		<fullscreen>no</fullscreen> <!-- Yes/No (not case-sensitive), use the screen's native resolution when using fullscreen (or it'll be a bit buggy) -->
+		<fps>60</fps> <!-- How fast the game plays (60 is recommended) -->
+	</setting>
+
+	<setting name="surface">
+		<!-- Everything surface related. Ex: background color, frame-rate -->
+		<background_color>black</background_color> <!-- Must correspond with the color table from "main.py", also it's not case sensitive -->
+	</setting>
+</settings>
