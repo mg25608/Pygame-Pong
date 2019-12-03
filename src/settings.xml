@@ -8,13 +8,25 @@
 
 	<setting name="application">
 		<!-- Everything from the application title to the icon is here -->
-		<title>Pong Game</title>
-		<fullscreen>no</fullscreen> <!-- Yes/No (not case-sensitive), use the screen's native resolution when using fullscreen (or it'll be a bit buggy) -->
+		<title>Modular Pong</title>
+		<fullscreen>No</fullscreen> <!-- Yes/No (not case-sensitive), use the screen's native resolution when using fullscreen (or it'll be a bit buggy) -->
 		<fps>60</fps> <!-- How fast the game plays (60 is recommended) -->
 	</setting>
 
 	<setting name="surface">
-		<!-- Everything surface related. Ex: background color, frame-rate -->
-		<background_color>black</background_color> <!-- Must correspond with the color table from "main.py", also it's not case sensitive -->
+		<!-- Everything surface related. Ex: game colors -->
+		<background_color>Black</background_color> <!-- Must correspond with the color table from "main.py", also it's not case sensitive -->
+	</setting>
+	
+	<setting name="game">
+		<!-- Contains game information such as paddle size, speed, ball speed, ball size, ball shape, max points, etc -->
+		<!-- PADDLE -->
+		<paddle_height>384</paddle_height> <!-- Half of the resolution height -->
+		<paddle_width>15</paddle_width>
+		<paddle_movement_speed>15</paddle_movement_speed>
+		
+		<!-- BALL -->
+		<ball_shape>Square</ball_shape> <!-- ball/square (not case sensitive)
+  		<ball_movement_speed>8</ball_movement_speed>
 	</setting>
 </settings>
