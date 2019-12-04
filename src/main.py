@@ -13,7 +13,7 @@ SettingsXML = xml_parser.XML('settings.xml')
 ResolutionSettings = {'Width': SettingsXML.FindByName('setting', 'resolution', 'width'),'Height': SettingsXML.FindByName('setting', 'resolution', 'height')}
 ApplicationSettings = {'Title': SettingsXML.FindByName('setting', 'application', 'title'), 'FPS': int(SettingsXML.FindByName('setting', 'application', 'fps')), 'IsFullscreen': str(SettingsXML.FindByName('setting', 'application', 'fullscreen'))}
 SurfaceSettings = {'BackgroundColor': SettingsXML.FindByName('setting', 'surface', 'background_color')}
-GameSettings = {'PaddleHeight': SettingsXML.FindByName('setting', 'game', 'paddle_height'), 'PaddleWidth': SettingsXML.FindByName('setting', 'game', 'paddle_width'), 'PaddleSpeed': SettingsXML.FindByName('setting', 'game', 'paddle_movement_speed'), 'BallShape': SettingsXML.FindByName('setting', 'game', 'ball_shape'), 'BallSpeed': SettingsXML.FindByName('setting', 'game', 'ball_movement_speed'), 'PaddleColor': SettingsXML.FindByName('setting', 'game', 'paddle_color'), 'BallColor': SettingsXML.FindByName('setting', 'game', 'ball_color'), 'BallHeight': SettingsXML.FindByName('setting', 'game', 'ball_height'), 'BallWidth': SettingsXML.FindByName('setting', 'game', 'ball_width')}
+GameSettings = {'PaddleHeight': SettingsXML.FindByName('setting', 'game', 'paddle_height'), 'PaddleWidth': SettingsXML.FindByName('setting', 'game', 'paddle_width'), 'PaddleSpeed': SettingsXML.FindByName('setting', 'game', 'paddle_movement_speed'), 'BallShape': SettingsXML.FindByName('setting', 'game', 'ball_shape'), 'BallSpeed': SettingsXML.FindByName('setting', 'game', 'ball_movement_speed'), 'PaddleColor': SettingsXML.FindByName('setting', 'game', 'paddle_color'), 'BallColor': SettingsXML.FindByName('setting', 'game', 'ball_color'), 'BallHeight': SettingsXML.FindByName('setting', 'game', 'ball_height'), 'BallWidth': SettingsXML.FindByName('setting', 'game', 'ball_width'), 'BallRadius': SettingsXML.FindByName('setting', 'game', 'ball_radius')}
 
 # Set display
 IsFullscreen = ApplicationSettings['IsFullscreen'].lower()
@@ -39,25 +39,51 @@ class Draw:
     def __init__(self, surface):
         print("Initializing draw for object")
         self.surface = surface
-    def rect(self, color, x,y,w,h, thickness):
+    def rect(self, color, x,y,w,h, thickness, fill):
         try:
             if self.surface != None:
                 print("Drawing a rectangle with sizes (X:{}, Y:{}, W:{}, H:{})".format(x,y,w,h))
-                pygame.draw.rect(self.surface, color, (x,y,w,h), thickness)
+                this = pygame.draw.rect(self.surface, color, (x,y,w,h), thickness)
+                if fill == True:
+                    # Fill using a new surface
+                    base = pygame.display.get_surface()
+                    base.fill(color, this)
             else:
                 raise Exception('Invalid surface, possible bad initialization')
         except Exception as e:
             print("Caught exception:",e)
-        else:
-            print("Drawn")
+        finally:
+            print("Drawing step complete")
+    def circle(self, color, x,y, radius, thickness):
+        try:
+            if self.surface != None:
+                print("Drawing a circle with sizes (X:{}, Y:{} R:{})".format(x,y,radius))
+                pygame.draw.circle(self.surface, color, (x,y), radius, radius)
+            else:
+                raise Exception("Invalid surface, possible bad initialization")
+        except Exception as e:
+            print("Caught exception:",e)
+        finally:
+            print("Drawing step complete")
+
+class Ball:
+    def __init__(self, sprite):
+        self.sprite = sprite
 
 # Draw game ball and paddles with variables
 HalfResolutionWidth = int(ResolutionSettings['Width']) / 2
 HalfResolutionHeight = int(ResolutionSettings['Height']) / 2
 
+print(HalfResolutionHeight, int(HalfResolutionHeight))
+
 GameBall = Draw(Surface)
-#GameBall.rect(Colors[GameSettings['BallColor'].lower()], (ResolutionSettings['Width']/2), (ResolutionSettings['Height']/2), (GameSettings['BallWidth']), (GameSettings['BallHeight']), 1)
-GameBall.rect(Colors[GameSettings['BallColor'].lower()], HalfResolutionWidth, HalfResolutionHeight, int(GameSettings['BallWidth']), int(GameSettings['BallHeight']), 1)
+# What is the shape?
+if GameSettings['BallShape'].lower() == 'default':
+    # Draw the default, which is a square
+    GameBall.rect(Colors[GameSettings['BallColor'].lower()], int(HalfResolutionWidth), int(HalfResolutionHeight), int(GameSettings['BallWidth']), int(GameSettings['BallHeight']), 1, True)
+else:
+    # Draw a circle
+    GameBall.circle(Colors[GameSettings['BallColor'].lower()], int(HalfResolutionWidth), int(HalfResolutionHeight), int(GameSettings['BallRadius']), 1)
 
 # Functional loop
 Clock = pygame.time.Clock()
@@ -66,6 +92,9 @@ while 1:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+    # Update ball
+
 
     # Update
     pygame.display.update()
