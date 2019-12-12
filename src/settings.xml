@@ -2,15 +2,16 @@
 <settings>
 	<setting name="resolution">
 		<!-- Resolution by width x height -->
-		<width>1280</width>
-		<height>768</height>
+		<width>800</width>
+		<height>640</height>
 	</setting>
 
 	<setting name="application">
 		<!-- Everything from the application title to the icon is here -->
 		<title>Modular Pong</title>
 		<fullscreen>No</fullscreen> <!-- Yes/No (not case-sensitive), use the screen's native resolution when using fullscreen (or it'll be a bit buggy) -->
-		<fps>60</fps> <!-- How fast the game plays (60 is recommended) -->
+		<fps>120</fps> <!-- How fast the game plays (60 is recommended) -->
+		<show_mouse>no</show_mouse>
 	</setting>
 
 	<setting name="surface">
@@ -21,16 +22,16 @@
 	<setting name="game">
 		<!-- Settings on game logic (sizes, speeds, conditions, etc) -->
 		<!-- PADDLE -->
-		<paddle_height>384</paddle_height> <!-- Half of the resolution height -->
-		<paddle_width>15</paddle_width>
-		<paddle_movement_speed>15</paddle_movement_speed>
+		<paddle_height>12</paddle_height> <!-- Half of the resolution height -->
+		<paddle_width>190</paddle_width>
+		<paddle_movement_speed>4</paddle_movement_speed>
 		<paddle_color>White</paddle_color>
 
 		<!-- BALL -->
+		<!-- As of 12/5/2019: Ball shape cannot be changed due to problems with the collision engine -->
 		<ball_height>12</ball_height>
 		<ball_width>12</ball_width>
-		<ball_shape>Default</ball_shape> <!-- circle/default (not case sensitive) (default is the general square) -->
-  	<ball_movement_speed>8</ball_movement_speed>
+		<ball_movement_speed>3</ball_movement_speed>
 		<ball_color>White</ball_color>
 		<ball_radius>25</ball_radius> <!-- Only applies if the shape is a sphere -->
 	</setting>
