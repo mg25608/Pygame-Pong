@@ -76,9 +76,9 @@ class Ball(pygame.sprite.Sprite):
         direction_radians = math.radians(self.direction)
         self.x += self.speed * math.sin(direction_radians)
         self.y -= self.speed * math.cos(direction_radians)
-        if self.y < 0:
+        if self.x < 0:
             self.reset()
-        if self.y > self.screenheight:
+        if self.x > self.screenwidth:
             self.reset()
         self.rect.x = self.x
         self.rect.y = self.y
@@ -88,34 +88,36 @@ class Ball(pygame.sprite.Sprite):
             self.direction = (360-self.direction)%360
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, player, y_pos):
+    def __init__(self, player, x_pos):
         super().__init__()
-        self.width = int(GameSettings['PaddleWidth'])
-        self.height = int(GameSettings['PaddleHeight'])
+        self.width = int(GameSettings['PaddleHeight'])
+        self.height = int(GameSettings['PaddleWidth'])
         self.image = pygame.Surface([self.width, self.height])
         self.image.fill(Colors[GameSettings['PaddleColor'].lower()])
         self.player = player
         self.rect = self.image.get_rect()
         self.screenheight = pygame.display.get_surface().get_height()
         self.screenwidth = pygame.display.get_surface().get_width()
-        self.rect.x = 0
-        self.rect.y = y_pos
+        self.rect.x = x_pos
+        self.rect.y = self.screenheight / 2
 
     def update(self, side):
-        CanGoLeft = True
-        CanGoRight = True
+        CanGoUp = True
+        CanGoDown = True
 
-        if self.rect.x > self.screenwidth - self.width:
-            CanGoRight = False
+        print(self.player, self.rect.x, self.rect.y)
+
+        if self.rect.y > self.screenheight - self.height:
+            CanGoUp = False
         if self.rect.x <= 0:
-            CanGoLeft = False
+            CanGoDown = False
 
-        if side == 'right':
-            if CanGoRight == True:
-                self.rect.x = self.rect.x + int(GameSettings['PaddleSpeed'])
-        elif side == 'left':
-            if CanGoLeft == True:
-                self.rect.x = self.rect.x - int(GameSettings['PaddleSpeed'])
+        if side == 'up':
+            if CanGoUp == True:
+                self.rect.y = self.rect.y - int(GameSettings['PaddleSpeed'])
+        elif side == 'down':
+            if CanGoDown == True:
+                self.rect.y = self.rect.y + int(GameSettings['PaddleSpeed'])
 
 score1 = 0
 score2 = 0
@@ -128,8 +130,8 @@ ball = Ball()
 balls = pygame.sprite.Group()
 balls.add(ball)
 
-player1 = Player('player1', (int(ResolutionSettings['Height']) - int(GameSettings['PaddleHeight']))-5)
-player2 = Player('player2', 25)
+player2 = Player('player2', (int(ResolutionSettings['Width']) - int(GameSettings['PaddleHeight']))-25)
+player1 = Player('player1', 23)
 
 movingsprites = pygame.sprite.Group()
 movingsprites.add(player1)
@@ -153,23 +155,20 @@ while not exit_program:
         player1_side = "still"
         player2_side = "still"
         try:
-            if keys[pygame.K_LEFT]:
-                player2_side = 'left'
-            if keys[pygame.K_RIGHT]:
-                player2_side = 'right'
-            if keys[pygame.K_d]:
-                player1_side = 'right'
-            if keys[pygame.K_a]:
-                player1_side = 'left'
+            if keys[pygame.K_UP]:
+                player2_side = 'up'
+            if keys[pygame.K_DOWN]:
+                player2_side = 'down'
+            if keys[pygame.K_w]:
+                player1_side = 'up'
+            if keys[pygame.K_s]:
+                player1_side = 'down'
         except Exception as e:
             print("Caught exception:",e)
 
         # Exit
         if event.type == pygame.QUIT:
             exit_program = True
-
-    if abs(score1 - score2) > 3:
-        done = True
 
     if not done:
         player1.update(player1_side)
@@ -193,7 +192,7 @@ while not exit_program:
         diff = -ball.direction
         ball.bounce(diff)
 
-    if ball.y <= 5:
+    if ball.y <= 1:
         # Give player 2 a point
         score2 += 1
     if ball.y >= int(ResolutionSettings['Height']):
