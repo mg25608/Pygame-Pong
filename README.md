@@ -10,4 +10,4 @@ Not only can you change the background color or the resolution but you can also.
 and more...
 
 ## Credits
-Premise, Development, and Execution - Michael G.
+Premise, development, and execution - Michael G.
