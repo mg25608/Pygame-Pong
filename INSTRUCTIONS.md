@@ -2,7 +2,7 @@
 ## Prerequisites
 * Make sure that Python 3.8 (or higher) is downloaded from the official site
 * Windows is recommended as it's the only OS tested on
-* Make sure that the latest version of PyGame is installed on your computer by following this guide: https://www.pygame.org/wiki/GettingStarted
+* Make sure that the latest version of PyGame is installed on your computer by following this guide: https://www.pygame.org/wiki/GettingStarted#Windows%20installation
 
 ## Guide
 1) Download the project via the download button or from here (directly), https://github.com/mg25608/Pygame-Pong/archive/master.zip
