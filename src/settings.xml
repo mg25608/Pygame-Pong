@@ -33,6 +33,5 @@
 		<ball_width>12</ball_width>
 		<ball_movement_speed>3</ball_movement_speed>
 		<ball_color>White</ball_color>
-		<ball_radius>25</ball_radius> <!-- Only applies if the shape is a sphere -->
 	</setting>
 </settings>
