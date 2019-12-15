@@ -8,6 +8,7 @@ Not only can you change the background color or the resolution but you can also.
 - Change the paddle color
 - Change the ball color
 - Change the ball speed
+
 and more...
 
 ## Credits
