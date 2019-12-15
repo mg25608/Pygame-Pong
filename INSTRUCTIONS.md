@@ -1,7 +1,7 @@
 # Instructions
 ## Prerequisites
 * Make sure that Python 3.8 (or higher) is downloaded from the official site
-* Windows is recommended is the only OS tested on
+* Windows is recommended as it's the only OS tested on
 
 ## Guide
 1) Download the repo from the download button or from here (directly), https://github.com/mg25608/Pygame-Pong/archive/master.zip
