@@ -6,6 +6,7 @@ import xml_parser # My XML parser
 import random
 import math
 import os
+import time
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 pygame.init() # Initialize pygame
@@ -17,7 +18,7 @@ SettingsXML = xml_parser.XML('settings.xml')
 ResolutionSettings = {'Width': SettingsXML.FindByName('setting', 'resolution', 'width'),'Height': SettingsXML.FindByName('setting', 'resolution', 'height')}
 ApplicationSettings = {'ShowMouse': SettingsXML.FindByName('setting', 'application', 'show_mouse'), 'Title': SettingsXML.FindByName('setting', 'application', 'title'), 'FPS': int(SettingsXML.FindByName('setting', 'application', 'fps')), 'IsFullscreen': str(SettingsXML.FindByName('setting', 'application', 'fullscreen'))}
 SurfaceSettings = {'BackgroundColor': SettingsXML.FindByName('setting', 'surface', 'background_color')}
-GameSettings = {'PaddleHeight': SettingsXML.FindByName('setting', 'game', 'paddle_height'), 'PaddleWidth': SettingsXML.FindByName('setting', 'game', 'paddle_width'), 'PaddleSpeed': SettingsXML.FindByName('setting', 'game', 'paddle_movement_speed'), 'BallSpeed': SettingsXML.FindByName('setting', 'game', 'ball_movement_speed'), 'PaddleColor': SettingsXML.FindByName('setting', 'game', 'paddle_color'), 'BallColor': SettingsXML.FindByName('setting', 'game', 'ball_color'), 'BallHeight': SettingsXML.FindByName('setting', 'game', 'ball_height'), 'BallWidth': SettingsXML.FindByName('setting', 'game', 'ball_width')}
+GameSettings = {'PaddleHeight': SettingsXML.FindByName('setting', 'game', 'paddle_height'), 'PaddleWidth': SettingsXML.FindByName('setting', 'game', 'paddle_width'), 'PaddleSpeed': SettingsXML.FindByName('setting', 'game', 'paddle_movement_speed'), 'BallSpeed': SettingsXML.FindByName('setting', 'game', 'ball_movement_speed'), 'PaddleColor': SettingsXML.FindByName('setting', 'game', 'paddle_color'), 'BallColor': SettingsXML.FindByName('setting', 'game', 'ball_color'), 'BallHeight': SettingsXML.FindByName('setting', 'game', 'ball_height'), 'BallWidth': SettingsXML.FindByName('setting', 'game', 'ball_width'), 'BallReset': SettingsXML.FindByName('setting', 'game', 'reset_ball'), 'BallResetTimer': SettingsXML.FindByName('setting', 'game', 'ball_reset_timer')}
 
 # Set display
 IsFullscreen = ApplicationSettings['IsFullscreen'].lower()
@@ -37,6 +38,10 @@ if ApplicationSettings['ShowMouse'].lower() == 'y' or ApplicationSettings['ShowM
 
 # Get some colors
 Colors = {'black': (0,0,0),'red': (255,0,0),'green': (0,255,0),'blue': (0,0,255),'white': (255,255,255)}
+
+# Scores
+score1 = 0
+score2 = 0
 
 # Set background color (from settings.xml)
 try:
@@ -58,34 +63,58 @@ class Ball(pygame.sprite.Sprite):
         self.direction = 0
         self.width = 10
         self.height = 10
+        self.lasthit = time.time()
         self.reset()
 
     def reset(self):
+        self.lasthit = time.time()
         self.x = self.screenwidth / 2
         self.y = self.screenheight / 2
         self.speed = int(GameSettings['BallSpeed'])
-        self.direction = random.randrange(-45,45)
+        self.direction = random.randrange(-180,180)
         if random.randrange(2) == 0 :
             self.direction += 180
 
-    def bounce(self,diff):
+    def bounce(self):
         self.direction = (180-self.direction)%360
-        self.direction -= diff
+        #self.direction -= diff
+        self.lasthit = time.time()
+        print("Bouncing off {}".format(self.direction))
+
+    def bounce_off_paddle(self):
+        RandomDirection = random.randint(45, 180)
+        print("RandomDirection: {}".format(RandomDirection))
+        self.direction = -(int(RandomDirection)-self.direction)%360
+        self.lasthit = time.time()
 
     def update(self):
+        global score1, score2
+        # If it's been more than 5 seconds since it has been hit, reset it
+        if GameSettings['BallReset'].lower() == 'y' or GameSettings['BallReset'].lower() == 'yes':
+            if time.time() - self.lasthit >= int(abs(GameSettings['BallResetTimer'])):
+                print("Resetting due to timeout")
+                self.reset()
+
         direction_radians = math.radians(self.direction)
         self.x += self.speed * math.sin(direction_radians)
         self.y -= self.speed * math.cos(direction_radians)
         if self.x < 0:
+            score2 += 1
             self.reset()
         if self.x > self.screenwidth:
+            score1 += 1
             self.reset()
         self.rect.x = self.x
         self.rect.y = self.y
-        if self.x <= 0:
-            self.direction = (360-self.direction)%360
-        if self.x > self.screenwidth-self.width:
-            self.direction = (360-self.direction)%360
+
+        if self.y >= self.screenheight - self.height:
+            self.direction = (180-self.direction)%360
+        if self.y <= 0:
+            self.direction = (180-self.direction)%360
+        if self.y > self.screenheight + self.height:
+            self.reset()
+        if self.y < -2:
+            self.reset()
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, player, x_pos):
@@ -105,12 +134,12 @@ class Player(pygame.sprite.Sprite):
         CanGoUp = True
         CanGoDown = True
 
-        print(self.player, self.rect.x, self.rect.y)
-
         if self.rect.y > self.screenheight - self.height:
-            CanGoUp = False
-        if self.rect.x <= 0:
+            print("Cannot go down")
             CanGoDown = False
+        if self.rect.y < 0:
+            print("Cannot go up")
+            CanGoUp = False
 
         if side == 'up':
             if CanGoUp == True:
@@ -118,9 +147,6 @@ class Player(pygame.sprite.Sprite):
         elif side == 'down':
             if CanGoDown == True:
                 self.rect.y = self.rect.y + int(GameSettings['PaddleSpeed'])
-
-score1 = 0
-score2 = 0
 
 font = pygame.font.Font(None, 36)
 
@@ -182,22 +208,10 @@ while not exit_program:
         Surface.blit(text, textpos)
 
     if pygame.sprite.spritecollide(player1, balls, False):
-        diff = (player1.rect.x + player1.width/2) - (ball.rect.x+ball.width/2)
-        #ball.y = 570
-        ball.bounce(diff)
+        ball.bounce_off_paddle()
 
     if pygame.sprite.spritecollide(player2, balls, False):
-        #diff = (player2.rect.x + player2.width/2) - (ball.rect.x+ball.width/2)
-        #ball.y = 40
-        diff = -ball.direction
-        ball.bounce(diff)
-
-    if ball.y <= 1:
-        # Give player 2 a point
-        score2 += 1
-    if ball.y >= int(ResolutionSettings['Height']):
-        # Give player 1 a point
-        score1 += 1
+        ball.bounce_off_paddle()
 
     scoreprint = "Player 1: "+str(score1)
     text = font.render(scoreprint, 1, Colors['white'])
